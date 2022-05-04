@@ -1,0 +1,8 @@
+include /etc/nginx/conf.d/http_block.inc;
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    include /etc/nginx/conf.d/server_block.inc;
+}
