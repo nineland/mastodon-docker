@@ -1,10 +1,10 @@
-name: Publish Mastodon Nginx container image
+name: Publish Mastodon container image
 
 on: workflow_dispatch
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: mastodon-nginx
+  IMAGE_NAME: mastodon
 
 jobs:
   build-and-push-image:
@@ -39,8 +39,8 @@ jobs:
       - name: Build image And Push
         uses: docker/build-push-action@v2
         with:
-          context: ./nginx
-          file: ./nginx/Dockerfile
+          context: ./mastodon
+          file: ./mastodon/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

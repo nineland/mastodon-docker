@@ -1,8 +1,9 @@
 FROM nginx:alpine
 
 LABEL maintainer="Nine Land Mastodon Administrator <mastodon-long@nine.land>"
+LABEL org.opencontainers.image.description="Nginx container image for mastodon, with static files."
 
-ARG MASTODON_VER=3.5.1
+ARG MASTODON_VER=3.5.2
 
 ENV NGINX_BACKEND_WEB_HOST=web \
     NGINX_BACKEND_WEB_PORT=3000 \
@@ -27,7 +28,7 @@ RUN mkdir -p /etc/nginx/templates && \
     ln -s /etc/nginx/templates/server_block.inc.template /etc/nginx/https-templates/server_block.inc.template && \
     mkdir -p /usr/share/mastodon && \
     wget -P /usr/share/mastodon "https://github.com/mastodon/mastodon/archive/refs/tags/v${MASTODON_VER}.zip" && \
-    unzip "/usr/share/mastodon/v${MASTODON_VER}.zip" -d /usr/share/mastodon && \
+    unzip -q "/usr/share/mastodon/v${MASTODON_VER}.zip" -d /usr/share/mastodon && \
     mv "/usr/share/mastodon/mastodon-${MASTODON_VER}/public" /usr/share/mastodon/ && \
     rm -rf "/usr/share/mastodon/mastodon-${MASTODON_VER}" && \
     rm "/usr/share/mastodon/v${MASTODON_VER}.zip" && \
