@@ -7,8 +7,8 @@ LABEL org.opencontainers.image.description="Elasticsearch container image, with 
 ARG ES_VER
 ENV TZ=Asia/Shanghai
 
-RUN wget "https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v${ES_VER}/elasticsearch-analysis-ik-${ES_VER}.zip" -O /tmp/ik.zip && \
-    wget "https://github.com/medcl/elasticsearch-analysis-stconvert/releases/download/v${ES_VER}/elasticsearch-analysis-stconvert-${ES_VER}.zip" -O /tmp/stconvert.zip && \
+RUN curl -L "https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v${ES_VER}/elasticsearch-analysis-ik-${ES_VER}.zip" -o /tmp/ik.zip && \
+    curl -L "https://github.com/medcl/elasticsearch-analysis-stconvert/releases/download/v${ES_VER}/elasticsearch-analysis-stconvert-${ES_VER}.zip" -o /tmp/stconvert.zip && \
     unzip -q /tmp/ik.zip -d /usr/share/elasticsearch/plugins/ik && \
     unzip -q /tmp/stconvert.zip -d /usr/share/elasticsearch/plugins/stconvert && \
     rm /tmp/ik.zip && \
