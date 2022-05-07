@@ -1,0 +1,150 @@
+version: '3'
+services:
+  db:
+    restart: always
+    image: postgres:14-alpine
+    shm_size: 256mb
+    networks:
+      - internal_network
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+    volumes:
+      - ./postgres14:/var/lib/postgresql/data
+    environment:
+      - 'POSTGRES_HOST_AUTH_METHOD=trust'
+      - 'TZ=Asia/Shanghai'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+
+  redis:
+    restart: always
+    image: redis:6-alpine
+    networks:
+      - internal_network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+    volumes:
+      - ./redis:/data
+    environment:
+      - TZ=Asia/Shanghai
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+
+  es:
+    restart: always
+    image: ghcr.io/nineland/elasticsearch:v7.10.2
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "cluster.name=es-mastodon"
+      - "discovery.type=single-node"
+      - "bootstrap.memory_lock=true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+    networks:
+       - internal_network
+    healthcheck:
+       test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+    volumes:
+       - ./elasticsearch:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  web:
+    image: ghcr.io/nineland/mastodon:v3.5.2
+    restart: always
+    env_file: .env.production
+    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
+    networks:
+      - external_network
+      - internal_network
+    healthcheck:
+      # prettier-ignore
+      test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:3000/health || exit 1']
+    depends_on:
+      - db
+      - redis
+      - es
+    volumes:
+      - ./public/system:/mastodon/public/system
+    environment:
+      - TZ=Asia/Shanghai
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+
+  streaming:
+    image: ghcr.io/nineland/mastodon:v3.5.2
+    restart: always
+    env_file: .env.production
+    command: node ./streaming
+    networks:
+      - external_network
+      - internal_network
+    healthcheck:
+      # prettier-ignore
+      test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1']
+    depends_on:
+      - db
+      - redis
+    environment:
+      - TZ=Asia/Shanghai
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+
+  sidekiq:
+    image: ghcr.io/nineland/mastodon:v3.5.2
+    restart: always
+    env_file: .env.production
+    command: bundle exec sidekiq
+    depends_on:
+      - db
+      - redis
+    networks:
+      - external_network
+      - internal_network
+    volumes:
+      - ./public/system:/mastodon/public/system
+    healthcheck:
+      test: ['CMD-SHELL', "ps aux | grep '[s]idekiq\ 6' || false"]
+    environment:
+      - TZ=Asia/Shanghai
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+
+  nginx:
+    image: ghcr.io/nineland/mastodon-nginx:v3.5.2
+    restart: unless-stopped
+    networks:
+      - external_network
+      - internal_network
+    depends_on:
+      - web
+      - streaming
+    environment:
+      - NGINX_SERVER_NAME="nine.land aux.nine.land"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+    ports:
+      - "127.0.0.1:8000:80/tcp"
+    volumes:
+      - "./public/system:/usr/share/mastodon/public/system"
+
+networks:
+  external_network:
+  internal_network:
+    internal: true
