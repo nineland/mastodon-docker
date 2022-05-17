@@ -1,0 +1,14 @@
+include /etc/nginx/conf.d/http_block.inc;
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name ${NGINX_SERVER_NAME};
+
+    real_ip_header ${NGINX_REAL_IP_HEADER};
+    real_ip_recursive on;
+    include /etc/nginx/conf.d/real_ip_from.inc;
+
+    include /etc/nginx/conf.d/server_block.inc;
+}

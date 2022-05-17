@@ -6,7 +6,8 @@ FROM nginx:alpine
 LABEL maintainer="Nine Land Mastodon Administrator <mastodon-long@nine.land>"
 LABEL org.opencontainers.image.description="Nginx container image for mastodon, with static files."
 
-ENV NGINX_BACKEND_WEB_HOST=web \
+ENV NGINX_ENVSUBST_TEMPLATE_DIR="/etc/nginx/templates-http" \
+    NGINX_BACKEND_WEB_HOST=web \
     NGINX_BACKEND_WEB_PORT=3000 \
     NGINX_BACKEND_STREAMING_HOST=streaming \
     NGINX_BACKEND_STREAMING_PORT=4000 \
@@ -15,20 +16,26 @@ ENV NGINX_BACKEND_WEB_HOST=web \
     NGINX_SSL_KEY= \
     NGINX_MASTODON_ROOT="/usr/share/mastodon/public" \
     NGINX_REAL_IP_HEADER="CF-Connecting-IP" \
-    NGINX_REAL_IP_VARIABLE="\$http_cf_connecting_ip" \
     TZ=Asia/Shanghai
 
 COPY --from=builder /opt/mastodon/public /usr/share/mastodon/public
 
-RUN mkdir -p /etc/nginx/templates && \
-    mkdir -p /etc/nginx/https-templates && \
+RUN wget -O /etc/nginx/dhparam https://ssl-config.mozilla.org/ffdhe2048.txt && \
+    mkdir -p /etc/nginx/templates-http && \
+    mkdir -p /etc/nginx/templates-proxied && \
+    mkdir -p /etc/nginx/templates-https && \
     wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/blocked.inc && \
-    wget -P /etc/nginx/templates https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/http_block.inc.template && \
-    wget -P /etc/nginx/templates https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/server_block.inc.template && \
-    wget -O /etc/nginx/templates/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/http_default.conf.template && \
-    wget -O /etc/nginx/https-templates/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/https_default.conf.template && \
-    ln -s /etc/nginx/templates/http_block.inc.template /etc/nginx/https-templates/http_block.inc.template && \
-    ln -s /etc/nginx/templates/server_block.inc.template /etc/nginx/https-templates/server_block.inc.template && \
+    wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/real_ip_from.inc && \
+    wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/ssl.inc && \
+    wget -P /etc/nginx/templates-http https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/http_block.inc.template && \
+    wget -P /etc/nginx/templates-http https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/server_block.inc.template && \
+    wget -O /etc/nginx/templates-http/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/default.conf_http.template && \
+    wget -O /etc/nginx/templates-proxied/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/default.conf_proxied.template && \
+    wget -O /etc/nginx/templates-https/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/default.conf_https.template && \
+    ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-proxied/http_block.inc.template && \
+    ln -s /etc/nginx/templates-http/server_block.inc.template /etc/nginx/templates-proxied/server_block.inc.template && \
+    ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-https/http_block.inc.template && \
+    ln -s /etc/nginx/templates-http/server_block.inc.template /etc/nginx/templates-https/server_block.inc.template && \
     mv /usr/share/mastodon/public/favicon.ico /usr/share/mastodon/public/favicon-original.ico && \
     mv /usr/share/mastodon/public/android-chrome-192x192.png /usr/share/mastodon/public/android-chrome-192x192-original.png && \
     mv /usr/share/mastodon/public/apple-touch-icon.png /usr/share/mastodon/public/apple-touch-icon-original.png && \
