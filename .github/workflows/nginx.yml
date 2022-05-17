@@ -5,6 +5,7 @@ on: workflow_dispatch
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: mastodon-nginx
+  MASTODON_VER: 3.5.2
 
 jobs:
   build-and-push-image:
@@ -43,5 +44,6 @@ jobs:
           file: ./nginx/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args: MASTODON_VER=${{ env.MASTODON_VER }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

@@ -1,9 +1,10 @@
+ARG MASTODON_VER
+FROM tootsuite/mastodon:v${MASTODON_VER} AS builder
+
 FROM nginx:alpine
 
 LABEL maintainer="Nine Land Mastodon Administrator <mastodon-long@nine.land>"
 LABEL org.opencontainers.image.description="Nginx container image for mastodon, with static files."
-
-ARG MASTODON_VER=3.5.2
 
 ENV NGINX_BACKEND_WEB_HOST=web \
     NGINX_BACKEND_WEB_PORT=3000 \
@@ -17,6 +18,8 @@ ENV NGINX_BACKEND_WEB_HOST=web \
     NGINX_REAL_IP_VARIABLE="\$http_cf_connecting_ip" \
     TZ=Asia/Shanghai
 
+COPY --from=builder /opt/mastodon/public /usr/share/mastodon/public
+
 RUN mkdir -p /etc/nginx/templates && \
     mkdir -p /etc/nginx/https-templates && \
     wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/blocked.inc && \
@@ -26,16 +29,10 @@ RUN mkdir -p /etc/nginx/templates && \
     wget -O /etc/nginx/https-templates/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/https_default.conf.template && \
     ln -s /etc/nginx/templates/http_block.inc.template /etc/nginx/https-templates/http_block.inc.template && \
     ln -s /etc/nginx/templates/server_block.inc.template /etc/nginx/https-templates/server_block.inc.template && \
-    mkdir -p /usr/share/mastodon && \
-    wget -P /usr/share/mastodon "https://github.com/mastodon/mastodon/archive/refs/tags/v${MASTODON_VER}.zip" && \
-    unzip -q "/usr/share/mastodon/v${MASTODON_VER}.zip" -d /usr/share/mastodon && \
-    mv "/usr/share/mastodon/mastodon-${MASTODON_VER}/public" /usr/share/mastodon/ && \
-    rm -rf "/usr/share/mastodon/mastodon-${MASTODON_VER}" && \
-    rm "/usr/share/mastodon/v${MASTODON_VER}.zip" && \
-    rm /usr/share/mastodon/public/favicon.ico && \
-    rm /usr/share/mastodon/public/android-chrome-192x192.png && \
-    rm /usr/share/mastodon/public/apple-touch-icon.png && \
-    rm /usr/share/mastodon/public/mstile-150x150.png && \
+    mv /usr/share/mastodon/public/favicon.ico /usr/share/mastodon/public/favicon-original.ico && \
+    mv /usr/share/mastodon/public/android-chrome-192x192.png /usr/share/mastodon/public/android-chrome-192x192-original.png && \
+    mv /usr/share/mastodon/public/apple-touch-icon.png /usr/share/mastodon/public/apple-touch-icon-original.png && \
+    mv /usr/share/mastodon/public/mstile-150x150.png /usr/share/mastodon/public/mstile-150x150-original.png && \
     rm /usr/share/mastodon/public/500.html && \
     rm /usr/share/mastodon/public/sw.js && \
     wget -P /usr/share/mastodon/public/ https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/favicon.ico && \
