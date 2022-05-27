@@ -10,5 +10,7 @@ server {
     real_ip_recursive on;
     include /etc/nginx/conf.d/real_ip_from.inc;
 
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+
     include /etc/nginx/conf.d/server_block.inc;
 }
