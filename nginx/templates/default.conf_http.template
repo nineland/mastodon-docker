@@ -6,5 +6,20 @@ server {
 
     server_name ${NGINX_SERVER_NAME};
 
+    root ${NGINX_MASTODON_ROOT};
+
     include /etc/nginx/conf.d/server_block.inc;
+
+    location ~ ^/(emoji|packs|system/accounts/avatars|system/media_attachments/files) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        include /etc/nginx/conf.d/add_header.inc;
+        try_files $uri @proxy;
+    }
+
+    location /sw.js {
+        add_header Cache-Control "public, max-age=0";
+        include /etc/nginx/conf.d/add_header.inc;
+        try_files $uri @proxy;
+    }
 }

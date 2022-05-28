@@ -24,18 +24,18 @@ RUN wget -O /etc/nginx/dhparam https://ssl-config.mozilla.org/ffdhe2048.txt && \
     mkdir -p /etc/nginx/templates-http && \
     mkdir -p /etc/nginx/templates-proxied && \
     mkdir -p /etc/nginx/templates-https && \
+    wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/add_header.inc && \
+    wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/add_header_with_hsts.inc && \
     wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/blocked.inc && \
     wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/real_ip_from.inc && \
+    wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/server_block.inc && \
     wget -P /etc/nginx/conf.d https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/ssl.inc && \
     wget -P /etc/nginx/templates-http https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/http_block.inc.template && \
-    wget -P /etc/nginx/templates-http https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/server_block.inc.template && \
     wget -O /etc/nginx/templates-http/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/default.conf_http.template && \
     wget -O /etc/nginx/templates-proxied/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/default.conf_proxied.template && \
     wget -O /etc/nginx/templates-https/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/default.conf_https.template && \
     ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-proxied/http_block.inc.template && \
-    ln -s /etc/nginx/templates-http/server_block.inc.template /etc/nginx/templates-proxied/server_block.inc.template && \
     ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-https/http_block.inc.template && \
-    ln -s /etc/nginx/templates-http/server_block.inc.template /etc/nginx/templates-https/server_block.inc.template && \
     mv /usr/share/mastodon/public/favicon.ico /usr/share/mastodon/public/favicon-original.ico && \
     mv /usr/share/mastodon/public/android-chrome-192x192.png /usr/share/mastodon/public/android-chrome-192x192-original.png && \
     mv /usr/share/mastodon/public/apple-touch-icon.png /usr/share/mastodon/public/apple-touch-icon-original.png && \

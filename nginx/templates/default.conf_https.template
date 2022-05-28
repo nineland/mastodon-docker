@@ -18,7 +18,23 @@ server {
     ssl_certificate ${NGINX_SSL_CERT};
     ssl_certificate_key ${NGINX_SSL_KEY};
     include /etc/nginx/conf.d/ssl.inc;
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+
+    root ${NGINX_MASTODON_ROOT};
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     include /etc/nginx/conf.d/server_block.inc;
+
+    location ~ ^/(emoji|packs|system/accounts/avatars|system/media_attachments/files) {
+        add_header Access-Control-Allow-Origin "*";
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        include /etc/nginx/conf.d/add_header_with_hsts.inc;
+        try_files $uri @proxy;
+    }
+
+    location /sw.js {
+        add_header Cache-Control "public, max-age=0";
+        include /etc/nginx/conf.d/add_header_with_hsts.inc;
+        try_files $uri @proxy;
+    }
 }

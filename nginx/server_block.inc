@@ -4,8 +4,6 @@
     sendfile on;
     client_max_body_size 80m;
 
-    root ${NGINX_MASTODON_ROOT};
-
     gzip on;
     gzip_disable "msie6";
 
@@ -19,23 +17,9 @@
 
     include /etc/nginx/conf.d/blocked.inc;
 
-    add_header Permissions-Policy "interest-cohort=()";
-    add_header X-Frame-Options sameorigin;
-    add_header X-Content-Type-Options nosniff;
-    add_header X-XSS-Protection "1; mode=block";
+    include /etc/nginx/conf.d/add_header.inc;
 
     location / {
-        try_files $uri @proxy;
-    }
-
-    location ~ ^/(emoji|packs|system/accounts/avatars|system/media_attachments/files) {
-        add_header Access-Control-Allow-Origin "*";
-        add_header Cache-Control "public, max-age=31536000, immutable";
-        try_files $uri @proxy;
-    }
-  
-    location /sw.js {
-        add_header Cache-Control "public, max-age=0";
         try_files $uri @proxy;
     }
 
