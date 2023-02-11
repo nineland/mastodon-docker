@@ -1,4 +1,4 @@
-FROM tootsuite/mastodon:v3.5.5
+FROM tootsuite/mastodon:v3.5.6
 
 LABEL maintainer="Nine Land Mastodon Administrator <mastodon-long@nine.land>"
 LABEL org.opencontainers.image.description="Mastodon container image, with patched code for Chinese search optimization."
