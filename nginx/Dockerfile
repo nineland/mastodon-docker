@@ -1,5 +1,5 @@
 ARG MASTODON_VER
-FROM tootsuite/mastodon:v${MASTODON_VER} AS builder
+FROM ghcr.io/mastodon/mastodon:v${MASTODON_VER} AS builder
 
 FROM nginx:alpine
 
