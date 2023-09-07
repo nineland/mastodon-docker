@@ -1,4 +1,5 @@
-FROM ghcr.io/mastodon/mastodon:v3.5.12
+ARG MASTODON_VER
+FROM ghcr.io/mastodon/mastodon:v${MASTODON_VER}
 
 LABEL maintainer="Nine Land Mastodon Administrator <mastodon-long@nine.land>"
 LABEL org.opencontainers.image.description="Mastodon container image, with patched code for Chinese search optimization."
