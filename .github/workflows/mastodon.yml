@@ -5,7 +5,7 @@ on: workflow_dispatch
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: mastodon
-  MASTODON_VER: 3.5.13
+  MASTODON_VER: 3.5.15
 
 jobs:
   build-and-push-image:
