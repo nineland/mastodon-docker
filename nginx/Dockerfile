@@ -37,12 +37,6 @@ RUN wget -O /etc/nginx/dhparam https://ssl-config.mozilla.org/ffdhe2048.txt && \
     ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-proxied/http_block.inc.template && \
     ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-https/http_block.inc.template && \
     mv /usr/share/mastodon/public/favicon.ico /usr/share/mastodon/public/favicon-original.ico && \
-    mv /usr/share/mastodon/public/android-chrome-192x192.png /usr/share/mastodon/public/android-chrome-192x192-original.png && \
-    mv /usr/share/mastodon/public/apple-touch-icon.png /usr/share/mastodon/public/apple-touch-icon-original.png && \
-    mv /usr/share/mastodon/public/mstile-150x150.png /usr/share/mastodon/public/mstile-150x150-original.png && \
     rm /usr/share/mastodon/public/500.html && \
     rm /usr/share/mastodon/public/sw.js && \
-    wget -P /usr/share/mastodon/public/ https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/favicon.ico && \
-    wget -P /usr/share/mastodon/public/ https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/android-chrome-192x192.png && \
-    wget -P /usr/share/mastodon/public/ https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/apple-touch-icon.png && \
-    wget -P /usr/share/mastodon/public/ https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/mstile-150x150.png
+    wget -P /usr/share/mastodon/public/ https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/favicon.ico
