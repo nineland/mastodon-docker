@@ -5,7 +5,7 @@ on: workflow_dispatch
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: mastodon-nginx
-  MASTODON_VER: 4.2.7
+  MASTODON_VER: 4.2.10
 
 jobs:
   build-and-push-image:
