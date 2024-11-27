@@ -36,7 +36,6 @@ RUN wget -O /etc/nginx/dhparam https://ssl-config.mozilla.org/ffdhe2048.txt && \
     wget -O /etc/nginx/templates-https/default.conf.template https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/templates/default.conf_https.template && \
     ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-proxied/http_block.inc.template && \
     ln -s /etc/nginx/templates-http/http_block.inc.template /etc/nginx/templates-https/http_block.inc.template && \
-    mv /usr/share/mastodon/public/favicon.ico /usr/share/mastodon/public/favicon-original.ico && \
     rm /usr/share/mastodon/public/500.html && \
     rm /usr/share/mastodon/public/sw.js && \
     wget -P /usr/share/mastodon/public/ https://raw.githubusercontent.com/nineland/mastodon-docker/main/nginx/favicon.ico
